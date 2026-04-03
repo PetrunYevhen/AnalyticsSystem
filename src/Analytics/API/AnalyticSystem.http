@@ -1,0 +1,6 @@
+@AnalyticSystem_HostAddress = http://localhost:5124
+
+GET {{AnalyticSystem_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
