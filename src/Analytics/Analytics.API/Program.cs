@@ -1,6 +1,6 @@
 using Autofac.Extensions.DependencyInjection;
 
-namespace API;
+namespace Analytics.API;
 
 public class Program
 {

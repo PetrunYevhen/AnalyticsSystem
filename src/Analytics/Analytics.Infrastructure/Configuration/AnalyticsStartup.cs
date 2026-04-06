@@ -1,6 +1,6 @@
 using Autofac;
 
-namespace Infrastructure.Configuration;
+namespace Analytics.Infrastructure.Configuration;
 
 public class AnalyticsStartup
 {

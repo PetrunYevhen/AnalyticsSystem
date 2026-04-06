@@ -1,8 +1,8 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Infrastructure.Configuration;
+using Analytics.Infrastructure.Configuration;
 
-namespace API;
+namespace Analytics.API;
 
 public class Startup
 {

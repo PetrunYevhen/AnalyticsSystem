@@ -4,13 +4,12 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <RootNamespace>API</RootNamespace>
     </PropertyGroup>
 
 
     <ItemGroup>
-      <ProjectReference Include="..\Application\Application.csproj" />
-      <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\Analytics.Application\Analytics.Application.csproj" />
+      <ProjectReference Include="..\Analytics.Infrastructure\Analytics.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
