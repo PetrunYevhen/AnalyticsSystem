@@ -4,6 +4,12 @@
         <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="9.0.0" />
     </ItemGroup>
     
+    <ItemGroup Condition="$(MSBuildProjectName.EndsWith('Application'))">
+        <PackageReference Include="Mediatr" Version="12.5.0"/>
+        <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+
+    </ItemGroup>
+    
     <ItemGroup Condition="$(MSBuildProjectName.EndsWith('Infrastructure'))">
         <PackageReference Include="Autofac" Version="9.0.0" />
         <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="9.0.0" />

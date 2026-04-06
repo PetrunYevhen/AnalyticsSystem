@@ -8,6 +8,15 @@ public class Startup
 {
     private const string AnalyticsConnectionString = "AnalyticsConnectionString";
     private readonly IConfiguration _configuration;
+
+    public Startup()
+    {
+        _configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .Build();
+        
+        
+    }
     
     public void ConfigureServices(IServiceCollection services)
     {
@@ -30,6 +39,11 @@ public class Startup
         
         app.UseRouting();
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+    }
+
+    public void ConfigureContainer(ContainerBuilder builder)
+    {
+        builder.RegisterModule(new AnalyticsAutofacModule());
     }
 
     private void InitializeModules(ILifetimeScope scope)
