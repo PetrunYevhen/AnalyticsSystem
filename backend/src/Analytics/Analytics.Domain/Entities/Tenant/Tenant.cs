@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using Analytics.Domain.Entities.Source;
 
-namespace Analytics.Domain.Entities;
+namespace Analytics.Domain.Entities.Tenant;
 
 public class Tenant
 {

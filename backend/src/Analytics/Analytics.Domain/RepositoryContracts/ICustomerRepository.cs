@@ -1,6 +1,6 @@
 namespace Analytics.Domain.RepositoryContracts;
 
-public class ICustomerRepository
+public interface ICustomerRepository
 {
     
 }

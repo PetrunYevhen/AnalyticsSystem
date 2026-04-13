@@ -1,4 +1,4 @@
-namespace Analytics.Domain.Entities.DataSource;
+namespace Analytics.Domain.Entities.Source;
 
 public enum DataSourceStatus
 {
