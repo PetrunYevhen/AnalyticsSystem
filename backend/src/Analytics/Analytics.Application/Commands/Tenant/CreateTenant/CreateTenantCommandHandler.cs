@@ -1,4 +1,5 @@
 using Analytics.Domain.Entities;
+using Analytics.Domain.Entities.Tenant;
 using Analytics.Domain.RepositoryContracts;
 using MediatR;
 
@@ -16,7 +17,8 @@ public class CreateTenantCommandHandler : IRequestHandler<CreateTenantCommand, G
     public async Task<Guid> Handle(CreateTenantCommand request, CancellationToken cancellationToken)
     {
         var newTenant = new Tenant(
-            request.Name,
+            request.AdminFullName,
+            request.CompanyName,
             request.Email,
             request.Password
         );

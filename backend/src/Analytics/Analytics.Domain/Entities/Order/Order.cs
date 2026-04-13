@@ -1,8 +1,6 @@
 using Domain;
 
 namespace Analytics.Domain.Entities;
-
-
 // Entity to calculate customer LTV 
 public class Order : Entity
 {
