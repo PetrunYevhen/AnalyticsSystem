@@ -1,4 +1,4 @@
-using Analytics.Domain.Entities;
+using Analytics.Domain.Entities.Tenant;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,7 +11,7 @@ public class TenantEntityTypeConfiguration : IEntityTypeConfiguration<Tenant>
         builder.ToTable("Tenants");
         
         builder.HasKey(p => p.Id);
-        builder.Property(prop => prop.Name).IsRequired();
+        builder.Property(prop => prop.CompanyName).IsRequired();
         builder.Property(prop => prop.Email).IsRequired();
         builder.Property(prop => prop.PasswordHash).IsRequired();
         builder.Property(prop => prop.ApiKey).IsRequired();

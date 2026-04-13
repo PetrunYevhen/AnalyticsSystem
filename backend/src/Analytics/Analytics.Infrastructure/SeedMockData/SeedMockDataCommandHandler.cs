@@ -1,4 +1,4 @@
-using Application.Tests;
+using Infrastructure.Tests;
 using MediatR;
 
 namespace Analytics.Infrastructure.SeedMockData;

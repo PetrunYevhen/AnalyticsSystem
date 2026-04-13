@@ -1,4 +1,4 @@
-using Analytics.Domain.Entities;
+using Analytics.Domain.Entities.Tenant;
 using Analytics.Domain.RepositoryContracts;
 
 namespace Analytics.Infrastructure.Repositories;
