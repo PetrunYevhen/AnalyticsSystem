@@ -7,7 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\BuildingBlocks\Application\Application.csproj" />
       <ProjectReference Include="..\Analytics.Domain\Analytics.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Commands\Order\" />
+      <Folder Include="Commands\Tenant\" />
+      <Folder Include="Queries\Customers\" />
+      <Folder Include="Queries\Tenants\" />
     </ItemGroup>
 
 </Project>

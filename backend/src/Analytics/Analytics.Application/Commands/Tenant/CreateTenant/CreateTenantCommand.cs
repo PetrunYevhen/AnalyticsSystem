@@ -1,7 +1,6 @@
 using Analytics.Application.Contracts;
-using Analytics.Domain.Entities;
 
-namespace Analytics.Application.Commands.CreateTenant;
+namespace Analytics.Application.Commands.Tenant.CreateTenant;
 
 public class CreateTenantCommand : CommandBase<Guid>
 {
