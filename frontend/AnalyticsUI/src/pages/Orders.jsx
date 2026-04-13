@@ -3,20 +3,29 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Package, Search, ArrowUpRight, Clock, CheckCircle2, XCircle } from "lucide-react"
+import { Package, Search, Clock, CheckCircle2 } from "lucide-react"
+import {StatusBadge} from "@/components/StatusBadge";
 
 export default function Orders() {
+    // 1. Розділяємо стан: окремо статистика, окремо список замовлень
     const [orders, setOrders] = useState([])
+    const [stats, setStats] = useState({ totalOrders: 0, successfulOrders: 0, processingOrders: 0 })
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await fetch("http://localhost:5044/orders?tenantId=366a4940-217f-44af-ba15-acf7852496e7")
+                const response = await fetch("http://localhost:5044/orders")
                 const data = await response.json()
-                setOrders(data)
+
+                // 2. Зберігаємо дані в правильні стейти
+                if (data) {
+                    setStats(data.orderStats || { totalOrders: 0, successfulOrders: 0, processingOrders: 0 })
+                    setOrders(data.orderItems || [])
+                }
             } catch (error) {
                 console.error("Помилка завантаження замовлень:", error)
+                setOrders([])
             } finally {
                 setLoading(false)
             }
@@ -24,19 +33,6 @@ export default function Orders() {
         fetchOrders()
     }, [])
 
-    const getStatusBadge = (status) => {
-        switch (status?.toLowerCase()) {
-            case "completed":
-            case "paid":
-                return <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200">Виконано</Badge>
-            case "pending":
-                return <Badge className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border-yellow-200">Очікує</Badge>
-            case "cancelled":
-                return <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-red-200">Скасовано</Badge>
-            default:
-                return <Badge variant="outline">{status}</Badge>
-        }
-    }
 
     return (
         <div className="p-6 md:p-10 space-y-6">
@@ -47,6 +43,7 @@ export default function Orders() {
                 </div>
             </div>
 
+            {/* 4. Виводимо готову статистику з об'єкта stats */}
             <div className="grid gap-4 md:grid-cols-3">
                 <Card>
                     <CardContent className="pt-6 flex items-center gap-4">
@@ -55,7 +52,7 @@ export default function Orders() {
                         </div>
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">Всього замовлень</p>
-                            <h3 className="text-2xl font-bold">{orders.length}</h3>
+                            <h3 className="text-2xl font-bold">{stats.totalOrders}</h3>
                         </div>
                     </CardContent>
                 </Card>
@@ -66,9 +63,7 @@ export default function Orders() {
                         </div>
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">Успішні</p>
-                            <h3 className="text-2xl font-bold">
-                                {orders.filter(o => o.status === 'Paid' || o.status === 'Completed').length}
-                            </h3>
+                            <h3 className="text-2xl font-bold">{stats.successfulOrders}</h3>
                         </div>
                     </CardContent>
                 </Card>
@@ -79,9 +74,7 @@ export default function Orders() {
                         </div>
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">В обробці</p>
-                            <h3 className="text-2xl font-bold">
-                                {orders.filter(o => o.status === 'Pending').length}
-                            </h3>
+                            <h3 className="text-2xl font-bold">{stats.processingOrders}</h3>
                         </div>
                     </CardContent>
                 </Card>
@@ -100,7 +93,7 @@ export default function Orders() {
                         <TableHeader>
                             <TableRow className="hover:bg-transparent">
                                 <TableHead>Номер замовлення</TableHead>
-                                <TableHead>Клієнт (ID)</TableHead>
+                                <TableHead>Користувач</TableHead>
                                 <TableHead>Дата</TableHead>
                                 <TableHead>Статус</TableHead>
                                 <TableHead className="text-right">Сума</TableHead>
@@ -113,21 +106,25 @@ export default function Orders() {
                                 <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">Замовлень поки немає</TableCell></TableRow>
                             ) : (
                                 orders.map((order) => (
-                                    <TableRow key={order.id} className="cursor-pointer hover:bg-muted/50 transition-colors">
+                                    <TableRow key={order.orderNumber} className="cursor-pointer hover:bg-muted/50 transition-colors">
+                                        {/* 5. Використовуємо правильні назви полів з вашого JSON */}
                                         <TableCell className="font-mono text-xs font-medium">
-                                            #{order.externalId || order.id.slice(0, 8)}
+                                            #{order.orderNumber}
                                         </TableCell>
-                                        <TableCell className="text-sm text-muted-foreground">
-                                            {order.customerId || "Гість"}
+                                        <TableCell className="text-sm text-muted-foreground truncate max-w-[150px]">
+                                            {order.customerName}
                                         </TableCell>
-                                        <TableCell className="text-sm">
-                                            {new Date(order.createdAt).toLocaleDateString('uk-UA')}
+                                        <TableCell className="text-sm whitespace-nowrap">
+                                            {new Date(order.orderDate).toLocaleDateString('uk-UA', {
+                                                day: '2-digit', month: '2-digit', year: 'numeric',
+                                                hour: '2-digit', minute: '2-digit'
+                                            })}
                                         </TableCell>
                                         <TableCell>
-                                            {getStatusBadge(order.status)}
+                                            <StatusBadge status={order.status} />
                                         </TableCell>
-                                        <TableCell className="text-right font-bold">
-                                            ₴ {order.amount?.toLocaleString() || "0.00"}
+                                        <TableCell className="text-right font-bold text-primary">
+                                            ₴ {order.totalAmount?.toLocaleString('uk-UA', { minimumFractionDigits: 2 }) || "0.00"}
                                         </TableCell>
                                     </TableRow>
                                 ))

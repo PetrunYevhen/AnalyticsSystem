@@ -4,13 +4,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { StatusBadge } from "@/components/StatusBadge"
 import {
     CreditCard,
     Search,
     ArrowDownLeft,
     ArrowUpRight,
     Download,
-    DollarSign,
     Wallet
 } from "lucide-react"
 
@@ -18,25 +18,37 @@ export default function Transactions() {
     const [transactions, setTransactions] = useState([])
     const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        const mockTransactions = [
-            { id: "TX-9021", customer: "user_771", amount: 1200.50, method: "Visa", status: "Success", date: "2026-04-06T14:30:00" },
-            { id: "TX-9022", customer: "user_882", amount: 450.00, method: "Apple Pay", status: "Pending", date: "2026-04-06T15:10:00" },
-            { id: "TX-9023", customer: "user_112", amount: 3200.00, method: "Mastercard", status: "Success", date: "2026-04-05T09:20:00" },
-            { id: "TX-9024", customer: "user_451", amount: 150.00, method: "Google Pay", status: "Failed", date: "2026-04-05T18:45:00" },
-        ]
-        setTransactions(mockTransactions)
-        setLoading(false)
-    }, [])
+    // Стейт для верхніх карток (ініціалізуємо нулями)
+    const [stats, setStats] = useState({
+        balance: 0,
+        yesterdayRevenue: 0,
+        refunds: 0
+    })
 
-    const getStatusStyle = (status) => {
-        switch (status) {
-            case "Success": return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200"
-            case "Pending": return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200"
-            case "Failed": return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-red-200"
-            default: return ""
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            try {
+                // Заміни URL на свій реальний ендпоінт транзакцій/платежів
+                const response = await fetch("http://localhost:5044/transactions")
+                const data = await response.json()
+
+                console.log("Дані з бекенду (Транзакції):", data)
+
+                if (data) {
+                    // Якщо бекенд надсилає статистику в об'єкті stats (наприклад, data.stats.balance)
+                    setStats(data.stats || { balance: 0, yesterdayRevenue: 0, refunds: 0 })
+                    setTransactions(data.transactions || [])
+                }
+            } catch (error) {
+                console.error("Помилка завантаження транзакцій:", error)
+                setTransactions([])
+            } finally {
+                setLoading(false)
+            }
         }
-    }
+
+        fetchTransactions()
+    }, [])
 
     return (
         <div className="p-6 md:p-10 space-y-6">
@@ -58,7 +70,7 @@ export default function Transactions() {
                     <CardContent>
                         <div className="text-2xl font-bold flex items-center gap-2">
                             <Wallet className="h-5 w-5 text-primary" />
-                            ₴ 142,500.00
+                            ₴ {stats.availableBalance?.toLocaleString('uk-UA') || "0"}
                         </div>
                     </CardContent>
                 </Card>
@@ -69,7 +81,7 @@ export default function Transactions() {
                     <CardContent>
                         <div className="text-2xl font-bold flex items-center gap-2 text-green-600">
                             <ArrowUpRight className="h-5 w-5" />
-                            ₴ 12,400.00
+                            ₴ {stats.yesterdayRevenue?.toLocaleString('uk-UA') || "0"}
                         </div>
                     </CardContent>
                 </Card>
@@ -80,7 +92,7 @@ export default function Transactions() {
                     <CardContent>
                         <div className="text-2xl font-bold flex items-center gap-2 text-orange-600">
                             <ArrowDownLeft className="h-5 w-5" />
-                            ₴ 1,200.00
+                            ₴ {stats.refundedAmount?.toLocaleString('uk-UA') || "0"}
                         </div>
                     </CardContent>
                 </Card>
@@ -109,27 +121,37 @@ export default function Transactions() {
                         <TableBody>
                             {loading ? (
                                 <TableRow><TableCell colSpan={6} className="text-center py-10">Завантаження...</TableCell></TableRow>
+                            ) : transactions.length === 0 ? (
+                                <TableRow><TableCell colSpan={6} className="text-center py-10 text-muted-foreground">Транзакцій не знайдено</TableCell></TableRow>
                             ) : (
                                 transactions.map((tx) => (
-                                    <TableRow key={tx.id} className="hover:bg-muted/50">
-                                        <TableCell className="font-mono text-xs">{tx.id}</TableCell>
-                                        <TableCell className="text-sm font-medium text-muted-foreground">{tx.customer}</TableCell>
+                                    <TableRow key={tx.id || tx.transactionId} className="hover:bg-muted/50">
+                                        <TableCell className="font-mono text-xs truncate max-w-[120px]">
+                                            {tx.id || tx.transactionId || "—"}
+                                        </TableCell>
+                                        <TableCell className="text-sm font-medium text-muted-foreground truncate max-w-[150px]">
+                                            {tx.customerName || tx.customerId || "Гість"}
+                                        </TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
                                                 <CreditCard className="h-4 w-4 text-muted-foreground" />
-                                                <span className="text-sm">{tx.method}</span>
+                                                <span className="text-sm truncate">{tx.method || tx.paymentMethod || "Card"}</span>
                                             </div>
                                         </TableCell>
-                                        <TableCell className="text-sm text-muted-foreground">
-                                            {new Date(tx.date).toLocaleString('uk-UA')}
+                                        <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                                            {/* Підтримка різних назв полів дати: date або createdAt */}
+                                            {tx.date || tx.createdAt
+                                                ? new Date(tx.date || tx.createdAt).toLocaleString('uk-UA', {
+                                                    day: '2-digit', month: '2-digit', year: 'numeric',
+                                                    hour: '2-digit', minute: '2-digit'
+                                                })
+                                                : "—"}
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant="outline" className={getStatusStyle(tx.status)}>
-                                                {tx.status}
-                                            </Badge>
+                                            <StatusBadge status={tx.status} />
                                         </TableCell>
                                         <TableCell className="text-right font-bold">
-                                            ₴ {tx.amount.toLocaleString()}
+                                            ₴ {tx.amount ? Number(tx.amount).toLocaleString('uk-UA', { minimumFractionDigits: 2 }) : "0.00"}
                                         </TableCell>
                                     </TableRow>
                                 ))

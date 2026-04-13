@@ -3,21 +3,41 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Progress } from '@/components/ui/progress'
 import { Badge } from "@/components/ui/badge"
-import { Megaphone, TrendingUp, MousePointer2, Target, Globe } from "lucide-react"
+import { Megaphone, TrendingUp, Target, Globe, Wallet, UserPlus } from "lucide-react"
 
 export default function Marketing() {
     const [marketingData, setMarketingData] = useState([])
     const [loading, setLoading] = useState(true)
 
+    // 1. Оновили назви полів відповідно до твого JSON
+    const [stats, setStats] = useState({
+        totalAdSpend: 0,
+        cac: 0,
+        romi: 0,
+        conversionRate: 0
+    })
+
     useEffect(() => {
-        const mockData = [
-            { id: 1, source: "Google Ads", clicks: 1240, spend: 500, revenue: 1200, roas: "2.4x" },
-            { id: 2, source: "Facebook", clicks: 850, spend: 300, revenue: 950, roas: "3.1x" },
-            { id: 3, source: "Instagram", clicks: 2100, spend: 450, revenue: 800, roas: "1.7x" },
-            { id: 4, source: "Email", clicks: 150, spend: 20, revenue: 400, roas: "20x" },
-        ]
-        setMarketingData(mockData)
-        setLoading(false)
+        const fetchMarketingData = async () => {
+            try {
+                const response = await fetch("http://localhost:5044/marketing")
+                const data = await response.json()
+
+                if (data) {
+                    // 2. Використовуємо правильні ключі з JSON
+                    setStats(data.marketingStats || { totalAdSpend: 0, cac: 0, romi: 0, conversionRate: 0 })
+                    setMarketingData(data.marketingListItems || [])
+                }
+
+                // ПРИБРАНО: setMarketingData([]) - воно затирало дані!
+            } catch (error) {
+                console.error("Помилка завантаження маркетингових даних:", error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchMarketingData()
     }, [])
 
     return (
@@ -25,45 +45,70 @@ export default function Marketing() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight">Маркетингова аналітика</h2>
-                    <p className="text-muted-foreground">Ефективність рекламних кампаній та джерел трафіку.</p>
+                    <p className="text-muted-foreground">Ефективність рекламних кампаній, CAC та джерела трафіку.</p>
                 </div>
             </div>
 
             <div className="grid gap-6 md:grid-cols-4">
                 <Card>
                     <CardHeader className="pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium">ROMI (Окупність)</CardTitle>
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                            <Wallet className="h-4 w-4 text-muted-foreground" />
+                            Витрати на рекламу
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-green-600">+245%</div>
-                        <TrendingUp className="h-4 w-4 text-green-500 mt-1" />
+                        {/* 3. Додано форматування суми з пробілами */}
+                        <div className="text-2xl font-bold">₴ {stats.totalAdSpend?.toLocaleString('uk-UA', { minimumFractionDigits: 2 })}</div>
+                        <p className="text-xs text-muted-foreground mt-1">За поточний місяць</p>
                     </CardContent>
                 </Card>
+
                 <Card>
                     <CardHeader className="pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium">CTR (Клікабельність)</CardTitle>
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                            <UserPlus className="h-4 w-4 text-muted-foreground" />
+                            CAC (Вартість клієнта)
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">3.2%</div>
-                        <p className="text-xs text-muted-foreground mt-1">Вище середнього на 0.4%</p>
+                        <div className="text-2xl font-bold">₴ {stats.cac?.toFixed(2)}</div>
+                        <div className="flex items-center text-xs mt-1 text-muted-foreground">
+                            <span>Немає даних для порівняння</span>
+                        </div>
                     </CardContent>
                 </Card>
+
                 <Card>
                     <CardHeader className="pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium">Ціна за клік (CPC)</CardTitle>
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                            <Megaphone className="h-4 w-4 text-muted-foreground" />
+                            ROMI (Окупність)
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">₴ 4.12</div>
-                        <p className="text-xs text-muted-foreground mt-1">Знизилась на 12% за тиждень</p>
+                        {/* 4. Обрізаємо ROMI до 2 знаків після коми */}
+                        <div className="text-2xl font-bold text-foreground">
+                            {stats.romi > 0 ? "+" : ""}{stats.romi?.toFixed(2)}%
+                        </div>
+                        <div className="flex items-center text-xs mt-1 text-muted-foreground">
+                            <span>Очікування даних</span>
+                        </div>
                     </CardContent>
                 </Card>
+
                 <Card>
                     <CardHeader className="pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium">Конверсія</CardTitle>
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                            <Target className="h-4 w-4 text-muted-foreground" />
+                            Конверсія в покупку
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">4.8%</div>
-                        <Progress value={4.8 * 10} className="h-1.5 mt-3" />
+                        <div className="text-2xl font-bold">
+                            {stats.conversionRate ? stats.conversionRate.toFixed(2) : "0"}%
+                        </div>
+                        <Progress value={stats.conversionRate} className="h-1.5 mt-3" />
                     </CardContent>
                 </Card>
             </div>
@@ -87,19 +132,34 @@ export default function Marketing() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {marketingData.map((item) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell className="font-medium">{item.source}</TableCell>
-                                        <TableCell>{item.clicks}</TableCell>
-                                        <TableCell>₴{item.spend}</TableCell>
-                                        <TableCell>₴{item.revenue}</TableCell>
-                                        <TableCell className="text-right">
-                                            <Badge variant="secondary" className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                                                {item.roas}
-                                            </Badge>
+                                {loading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
+                                            Завантаження...
                                         </TableCell>
                                     </TableRow>
-                                ))}
+                                ) : marketingData.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
+                                            Дані про джерела трафіку відсутні
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    // 5. Використовуємо item.source як key, оскільки id в JSON немає
+                                    marketingData.map((item) => (
+                                        <TableRow key={item.source}>
+                                            <TableCell className="font-medium">{item.source}</TableCell>
+                                            <TableCell>{item.clicks}</TableCell>
+                                            <TableCell>₴{item.spend?.toLocaleString('uk-UA')}</TableCell>
+                                            <TableCell>₴{item.revenue?.toLocaleString('uk-UA')}</TableCell>
+                                            <TableCell className="text-right">
+                                                <Badge variant="secondary" className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                                                    {item.roas?.toFixed(2)}x
+                                                </Badge>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
                             </TableBody>
                         </Table>
                     </CardContent>
@@ -115,31 +175,31 @@ export default function Marketing() {
                     <CardContent className="space-y-6">
                         <div className="space-y-2">
                             <div className="flex justify-between text-sm">
-                                <span>Перегляди (10k)</span>
-                                <span className="font-bold">100%</span>
+                                <span className="text-muted-foreground">Перегляди</span>
+                                <span className="font-bold">0%</span>
                             </div>
-                            <Progress value={100} className="h-2 bg-muted" />
+                            <Progress value={0} className="h-2 bg-muted" />
                         </div>
                         <div className="space-y-2">
                             <div className="flex justify-between text-sm">
-                                <span>Кліки (1.2k)</span>
-                                <span className="font-bold text-blue-500">12%</span>
+                                <span className="text-muted-foreground">Кліки</span>
+                                <span className="font-bold">0%</span>
                             </div>
-                            <Progress value={12} className="h-2 bg-muted shadow-sm" />
+                            <Progress value={0} className="h-2 bg-muted" />
                         </div>
                         <div className="space-y-2">
                             <div className="flex justify-between text-sm">
-                                <span>Кошик (240)</span>
-                                <span className="font-bold text-orange-500">2.4%</span>
+                                <span className="text-muted-foreground">Кошик</span>
+                                <span className="font-bold">0%</span>
                             </div>
-                            <Progress value={2.4 * 5} className="h-2 bg-muted" />
+                            <Progress value={0} className="h-2 bg-muted" />
                         </div>
                         <div className="space-y-2">
                             <div className="flex justify-between text-sm">
-                                <span>Оплачено (48)</span>
-                                <span className="font-bold text-green-500">0.5%</span>
+                                <span className="text-muted-foreground">Оплачено</span>
+                                <span className="font-bold">0%</span>
                             </div>
-                            <Progress value={0.5 * 10} className="h-2 bg-muted" />
+                            <Progress value={0} className="h-2 bg-muted" />
                         </div>
                     </CardContent>
                 </Card>
