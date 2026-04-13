@@ -1,4 +1,4 @@
-namespace Analytics.Application.Queries.Orders.GetOrdersDashboard.Dtos;
+namespace Analytics.Application.Queries.Transactions.GetTransactiosDashboard.Dtos;
 
 public record TransactionStatsDto
 {

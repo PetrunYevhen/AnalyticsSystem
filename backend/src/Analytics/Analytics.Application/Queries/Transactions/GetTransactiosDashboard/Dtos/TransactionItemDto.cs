@@ -1,4 +1,4 @@
-namespace Analytics.Application.Queries.Transactions.Dtos;
+namespace Analytics.Application.Queries.Transactions.GetTransactiosDashboard.Dtos;
 
 public record TransactionItemDto(
     string TransactionId,

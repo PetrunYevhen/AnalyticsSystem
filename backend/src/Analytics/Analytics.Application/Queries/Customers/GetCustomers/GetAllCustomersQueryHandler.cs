@@ -2,7 +2,7 @@ using Application;
 using Dapper;
 using MediatR;
 
-namespace Analytics.Application.Queries.Customer.GetCustomers;
+namespace Analytics.Application.Queries.Customers.GetCustomers;
 
 public class GetAllCustomersQueryHandler : IRequestHandler<GetAllCustomersQuery, List<CustomerDto>>
 {
@@ -22,7 +22,7 @@ public class GetAllCustomersQueryHandler : IRequestHandler<GetAllCustomersQuery,
             ""Id"", 
             ""FullName"", 
             ""Email"", 
-            ""Status"", 
+            TRIM(""Status"") AS ""Status"",         
             ""LastOrderDate"", 
             ""AcquisitionChannel""
         FROM ""Analytics"".""Customers""

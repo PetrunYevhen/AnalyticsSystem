@@ -1,6 +1,4 @@
-using Analytics.Domain.Entities.Order;
-
-namespace Analytics.Application.Queries.Orders.GetOrdersDashboard;
+namespace Analytics.Application.Queries.Orders.GetOrdersDashboard.Dtos;
 
 public record OrderListItemDto(
     string OrderNumber,   

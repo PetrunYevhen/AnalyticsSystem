@@ -1,13 +1,11 @@
 
-using Analytics.Domain.Entities.Customer;
-
-namespace Analytics.Application.Queries.Customer.GetCustomers;
+namespace Analytics.Application.Queries.Customers.GetCustomers;
 
 public record CustomerDto(
      Guid Id,
      string FullName,
      string? Email,
-     CustomerStatus Status,
+     string Status,
      DateTime LastOrderDate,
      string AcquisitionChannel
 );

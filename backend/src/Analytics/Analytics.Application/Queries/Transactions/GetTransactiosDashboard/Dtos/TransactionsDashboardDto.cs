@@ -1,7 +1,7 @@
-namespace Analytics.Application.Queries.Transactions.Dtos;
+using Analytics.Application.Queries.Orders.GetOrdersDashboard.Dtos;
+
+namespace Analytics.Application.Queries.Transactions.GetTransactiosDashboard.Dtos;
 
 public record TransactionsDashboardDto(
-         decimal AvailableBalance,
-         decimal YesterdayRevenue,
-         decimal RefundedAmount,
+         TransactionStatsDto Stats,
          List<TransactionItemDto> Transactions);

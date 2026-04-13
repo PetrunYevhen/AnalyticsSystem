@@ -1,4 +1,4 @@
-namespace Analytics.Application.Queries.Orders.GetOrdersDashboard;
+namespace Analytics.Application.Queries.Orders.GetOrdersDashboard.Dtos;
 
 public record OrdersDashboardDto(
     OrderStatsDto OrderStats,
