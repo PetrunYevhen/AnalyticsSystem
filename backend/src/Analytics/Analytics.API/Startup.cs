@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Analytics.Infrastructure.Configuration;
@@ -14,13 +15,23 @@ public class Startup
         _configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
-        
-        
     }
     
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowReactApp", policy =>
+            {
+                policy.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+        services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
     }
@@ -36,8 +47,11 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Analytics"));
         }
-        
+
         app.UseRouting();
+        app.UseCors("AllowReactApp");
+        
+        
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 
