@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react"
 import { apiGet } from "@/lib/api-client"
+import { defaultDirectionFor } from "@/lib/sort"
 
 export function useTransactions(pageSize = 50) {
     const [data, setData] = useState({
@@ -55,7 +56,9 @@ export function useTransactions(pageSize = 50) {
     const handleSort = useCallback((key) => {
         setSort(prev => ({
             sortBy: key,
-            direction: prev.sortBy === key && prev.direction === 'Asc' ? 'Desc' : 'Asc'
+            direction: prev.sortBy === key
+                ? (prev.direction === 'Asc' ? 'Desc' : 'Asc')
+                : defaultDirectionFor(key),
         }));
         setPage(1);
     }, []);

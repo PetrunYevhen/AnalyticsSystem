@@ -1,20 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { apiGet } from "@/lib/api-client"
-
-const toExclusiveEndUtc = (date) => {
-    if (!date) return undefined
-    const next = new Date(date)
-    next.setUTCHours(0, 0, 0, 0)
-    next.setUTCDate(next.getUTCDate() + 1)
-    return next.toISOString()
-}
-
-const toStartUtc = (date) => {
-    if (!date) return undefined
-    const d = new Date(date)
-    d.setUTCHours(0, 0, 0, 0)
-    return d.toISOString()
-}
+import { toLocalDayStartIso, toLocalDayEndExclusiveIso } from "@/lib/date"
 
 export function useMarketingDashboard(fromDate, toDate) {
     const [data, setData] = useState(null)
@@ -34,8 +20,8 @@ export function useMarketingDashboard(fromDate, toDate) {
             setError(null)
 
             const params = {
-                fromDate: toStartUtc(fromDate),
-                toDate:   toExclusiveEndUtc(toDate),
+                fromDate: toLocalDayStartIso(fromDate),
+                toDate:   toLocalDayEndExclusiveIso(toDate),
             }
 
             try {

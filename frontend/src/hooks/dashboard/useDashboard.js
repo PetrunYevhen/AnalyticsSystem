@@ -1,18 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { apiGet } from "@/lib/api-client";
-
-const toExclusiveEndUtc = (date) => {
-    const next = new Date(date);
-    next.setUTCHours(0, 0, 0, 0);
-    next.setUTCDate(next.getUTCDate() + 1);
-    return next.toISOString();
-};
-
-const toStartUtc = (date) => {
-    const d = new Date(date);
-    d.setUTCHours(0, 0, 0, 0);
-    return d.toISOString();
-};
+import { toLocalDayStartIso, toLocalDayEndExclusiveIso } from "@/lib/date";
 
 export function useDashboard(range) {
     const [data, setData] = useState(null);
@@ -31,8 +19,8 @@ export function useDashboard(range) {
 
         try {
             const result = await apiGet("/dashboard", {
-                from: toStartUtc(range.from),
-                to:   toExclusiveEndUtc(range.to),
+                from: toLocalDayStartIso(range.from),
+                to:   toLocalDayEndExclusiveIso(range.to),
                 granularity: "Daily",
             }, abortRef.current.signal);
 

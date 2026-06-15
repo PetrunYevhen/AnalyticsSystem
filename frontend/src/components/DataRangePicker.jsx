@@ -1,12 +1,12 @@
 import { useState } from "react"
-import { format, isSameDay } from "date-fns"
+import { format } from "date-fns"
 import { uk } from "date-fns/locale"
 import { Calendar as CalendarIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-export function DateRangePicker({ value, onChange }) {
+export function DateRangePicker({ value, onChange, disabled }) {
     const [open, setOpen] = useState(false)
 
     const label = value?.from
@@ -15,16 +15,7 @@ export function DateRangePicker({ value, onChange }) {
             : format(value.from, "dd.MM.yyyy")
         : "Оберіть період"
 
-    const handleSelect = (range, triggerDate) => {
-        if (value?.from && value?.to) {
-            onChange({ from: triggerDate, to: undefined })
-            return
-        }
-        if (value?.from && !value?.to && isSameDay(value.from, triggerDate)) {
-            onChange({ from: value.from, to: triggerDate })
-            setOpen(false)
-            return
-        }
+    const handleSelect = (range) => {
         onChange(range)
         if (range?.from && range?.to) setOpen(false)
     }
@@ -32,7 +23,7 @@ export function DateRangePicker({ value, onChange }) {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="outline" className="w-fit gap-2">
+                <Button variant="outline" className="w-fit gap-2" disabled={disabled}>
                     <CalendarIcon className="h-4 w-4" />
                     {label}
                 </Button>
@@ -45,6 +36,7 @@ export function DateRangePicker({ value, onChange }) {
                     defaultMonth={value?.from}
                     numberOfMonths={2}
                     locale={uk}
+                    disabled={{ after: new Date() }}
                 />
             </PopoverContent>
         </Popover>

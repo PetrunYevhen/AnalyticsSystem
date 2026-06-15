@@ -23,12 +23,12 @@ const safeFormatDate = (dateString) => {
 }
 
 const COLUMNS = [
-    { label: "ID Замовлення", sortKey: "externalOrderId", align: "left",  width: "w-[15%]" },
-    { label: "Користувач",    sortKey: "customerName",    align: "left",  width: "w-[20%]" },
-    { label: "Метод",         sortKey: "paymentMethod",   align: "left",  width: "w-[15%]" },
-    { label: "Дата та час",   sortKey: "transactionDate", align: "left",  width: "w-[20%]" },
-    { label: "Статус",        sortKey: "status",          align: "left",  width: "w-[15%]" },
-    { label: "Сума",          sortKey: "totalAmount",     align: "right", width: "w-[15%]" },
+    { label: "ID Замовлення", sortKey: "ExternalOrderId", align: "left",  width: "w-[15%]" },
+    { label: "Користувач",    sortKey: "CustomerName",    align: "left",  width: "w-[20%]" },
+    { label: "Метод",         sortKey: "PaymentMethod",   align: "left",  width: "w-[15%]" },
+    { label: "Дата та час",   sortKey: "TransactionDate", align: "left",  width: "w-[20%]" },
+    { label: "Статус",        sortKey: "Status",          align: "left",  width: "w-[15%]" },
+    { label: "Сума",          sortKey: "TotalAmount",     align: "right", width: "w-[15%]" },
 ]
 
 const SortIcon = memo(function SortIcon({ active, direction }) {

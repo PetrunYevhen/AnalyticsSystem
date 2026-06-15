@@ -4,11 +4,11 @@ import { StatusBadge } from "@/components/StatusBadge"
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react"
 
 const COLUMNS = [
-    { label: "Номер",  sortKey: "ExternalOrderId", align: "left"  },
-    { label: "Клієнт", sortKey: "CustomerName",    align: "left"  },
-    { label: "Дата",   sortKey: "OrderDate",       align: "left"  },
-    { label: "Статус", sortKey: "Status",          align: "left"  },
-    { label: "Сума",   sortKey: "TotalAmount",     align: "right" },
+    { label: "Номер",  sortKey: "ExternalOrderId", align: "left",  width: "w-[18%]" },
+    { label: "Клієнт", sortKey: "CustomerName",    align: "left",  width: "w-[32%]" },
+    { label: "Дата",   sortKey: "OrderDate",       align: "left",  width: "w-[18%]" },
+    { label: "Статус", sortKey: "Status",          align: "left",  width: "w-[16%]" },
+    { label: "Сума",   sortKey: "TotalAmount",     align: "right", width: "w-[16%]" },
 ]
 
 const dateFormatter = new Intl.DateTimeFormat("uk-UA")
@@ -78,7 +78,7 @@ export function OrdersTable({ items, loading, error, sortBy, direction, onSort, 
     if (!items?.length) return <div className="p-10 text-center text-muted-foreground">Немає даних</div>
 
     return (
-        <Table>
+        <Table className="w-full table-fixed">
             <TableHeader>
                 <TableRow className="bg-muted/50">
                     {COLUMNS.map((col) => {
@@ -89,7 +89,7 @@ export function OrdersTable({ items, loading, error, sortBy, direction, onSort, 
                                 role="button"
                                 tabIndex={0}
                                 aria-sort={active ? (direction === "Asc" ? "ascending" : "descending") : "none"}
-                                className={`${col.width} cursor-pointer select-none ...`}
+                                className={`${col.width} cursor-pointer select-none hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${col.align === "right" ? "text-right" : ""}`}
                                 onClick={() => onSort?.(col.sortKey)}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter" || e.key === " ") {

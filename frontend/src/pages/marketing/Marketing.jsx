@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { format, subDays } from "date-fns"
+import { uk } from "date-fns/locale"
 import { DateRangePicker } from "@/components/DataRangePicker"
 
 import { useMarketingDashboard } from "@/hooks/marketings/useMarketings"
@@ -11,7 +12,7 @@ import { CampaignsSection } from "./components/CampaignsSection"
 import { AddExpenseModal } from "./components/modals/AddExpenseModal"
 import { AddCustomersToCampaignModal } from "./components/modals/AddCustomersToCampaignModal"
 
-const toISO = (d) => format(d, "yyyy-MM-dd")
+const formatLabel = (d) => format(d, "dd.MM.yyyy", { locale: uk })
 
 export default function MarketingPage() {
     const [range, setRange] = useState({
@@ -19,10 +20,7 @@ export default function MarketingPage() {
         to: new Date(),
     })
 
-    const fromDate = range?.from ? toISO(range.from) : undefined
-    const toDate = range?.to ? toISO(range.to) : undefined
-
-    const { data, loading, error, refetch } = useMarketingDashboard(fromDate, toDate)
+    const { data, loading, error, refetch } = useMarketingDashboard(range?.from, range?.to)
 
     const [selectedCampaign, setSelectedCampaign] = useState(null)
 
@@ -36,7 +34,7 @@ export default function MarketingPage() {
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight">Маркетингова аналітика</h2>
                     <p className="text-muted-foreground text-sm">
-                        Період: {fromDate} — {toDate}
+                        Період: {range?.from ? formatLabel(range.from) : "—"} — {range?.to ? formatLabel(range.to) : "—"}
                     </p>
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">

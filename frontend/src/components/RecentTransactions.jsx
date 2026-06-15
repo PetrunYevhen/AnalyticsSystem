@@ -82,7 +82,7 @@ export function RecentTransactions({ transactions = [] }) {
                                         <StatusBadge status={t.status} />
                                     </TableCell>
                                     <TableCell className="text-muted-foreground">
-                                        {formatDate(t.date ?? t.createdAt)}
+                                        {formatDate(t.transactionDate)}
                                     </TableCell>
                                     <TableCell className="text-right font-medium tabular-nums">
                                         {formatAmount(t.amount)}
